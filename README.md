@@ -105,36 +105,32 @@ Once a repository is ingested, you can access its data either by calling the `gi
 On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
 On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 
-<details>
-  <summary>Development/Unpublished Servers Configuration</summary>
-  ```
-  "mcpServers": {
-    "trelis-gitingest-mcp": {
-      "command": "uv",
-      "args": [
-        "--directory",
-        "/Users/your-username/trelis-gitingest-mcp",
-        "run",
-        "trelis-gitingest-mcp"
-      ]
-    }
+Development/Unpublished Servers Configuration
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uv",
+    "args": [
+      "--directory",
+      "/Users/your-username/trelis-gitingest-mcp",
+      "run",
+      "trelis-gitingest-mcp"
+    ]
   }
-  ```
-</details>
+}
+```
 
-<details>
-  <summary>Published Servers Configuration</summary>
-  ```
-  "mcpServers": {
-    "trelis-gitingest-mcp": {
-      "command": "uvx",
-      "args": [
-        "trelis-gitingest-mcp"
-      ]
-    }
+Published Servers Configuration
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uvx",
+    "args": [
+      "trelis-gitingest-mcp"
+    ]
   }
-  ```
-</details>
+}
+```
 
 ## Development
 
