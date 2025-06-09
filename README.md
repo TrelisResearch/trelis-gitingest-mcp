@@ -1,10 +1,78 @@
-# trelis-gitingest-mcp MCP server
+# Gitingest MCP server
 
 An MCP server for gitingest that provides access to Git repository analysis through the Model Context Protocol (MCP). This server leverages the gitingest library to analyze Git repositories and make their content available in a format optimized for LLMs.
 
 ## Overview
 
 This MCP server provides a single unified tool for accessing Git repository data. It automatically handles repository ingestion as needed, so users can immediately query repository content without an explicit ingestion step.
+
+## Quickstart
+
+### Install
+
+#### Claude Desktop
+
+On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
+On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+
+Development/Unpublished Servers Configuration
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uv",
+    "args": [
+      "--directory",
+      "/Users/your-username/trelis-gitingest-mcp",
+      "run",
+      "trelis-gitingest-mcp"
+    ]
+  }
+}
+```
+
+Published Servers Configuration
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uvx",
+    "args": [
+      "trelis-gitingest-mcp"
+    ]
+  }
+}
+```
+
+## Development
+
+### Building and Publishing
+
+To prepare the package for distribution:
+
+1. Sync dependencies and update lockfile:
+```bash
+uv sync
+```
+
+2. Build package distributions:
+```bash
+uv build
+```
+
+This will create source and wheel distributions in the `dist/` directory.
+
+3. Publish to PyPI:
+```bash
+uv publish
+```
+
+Note: You'll need to set PyPI credentials via environment variables or command flags:
+- Token: `--token` or `UV_PUBLISH_TOKEN`
+- Or username/password: `--username`/`UV_PUBLISH_USERNAME` and `--password`/`UV_PUBLISH_PASSWORD`
+
+### Debugging
+
+Since MCP servers run over stdio, debugging can be challenging. For the best debugging
+experience, we strongly recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector).
 
 ## Tool: `gitingest`
 
@@ -96,76 +164,6 @@ Once a repository is ingested, you can access its data either by calling the `gi
   "output": "/path/to/output/file.txt"
 }
 ```
-
-## Configuration
-
-## Quickstart
-
-### Install
-
-#### Claude Desktop
-
-On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
-On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
-
-Development/Unpublished Servers Configuration
-```json
-"mcpServers": {
-  "trelis-gitingest-mcp": {
-    "command": "uv",
-    "args": [
-      "--directory",
-      "/Users/your-username/trelis-gitingest-mcp",
-      "run",
-      "trelis-gitingest-mcp"
-    ]
-  }
-}
-```
-
-Published Servers Configuration
-```json
-"mcpServers": {
-  "trelis-gitingest-mcp": {
-    "command": "uvx",
-    "args": [
-      "trelis-gitingest-mcp"
-    ]
-  }
-}
-```
-
-## Development
-
-### Building and Publishing
-
-To prepare the package for distribution:
-
-1. Sync dependencies and update lockfile:
-```bash
-uv sync
-```
-
-2. Build package distributions:
-```bash
-uv build
-```
-
-This will create source and wheel distributions in the `dist/` directory.
-
-3. Publish to PyPI:
-```bash
-uv publish
-```
-
-Note: You'll need to set PyPI credentials via environment variables or command flags:
-- Token: `--token` or `UV_PUBLISH_TOKEN`
-- Or username/password: `--username`/`UV_PUBLISH_USERNAME` and `--password`/`UV_PUBLISH_PASSWORD`
-
-### Debugging
-
-Since MCP servers run over stdio, debugging can be challenging. For the best debugging
-experience, we strongly recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector).
 
 
 You can launch the MCP Inspector via [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) with this command:
