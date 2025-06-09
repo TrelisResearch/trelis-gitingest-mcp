@@ -17,7 +17,7 @@ from pydantic import AnyUrl
 # Dictionary to store ingestion results in memory
 ingest_results: Dict[str, Tuple[str, str, str]] = {}
 
-server = Server("gitingest-mcp")
+server = Server("trelis-gitingest-mcp")
 
 @server.list_resources()
 async def handle_list_resources() -> list[types.Resource]:
@@ -254,7 +254,7 @@ async def main():
             read_stream,
             write_stream,
             InitializationOptions(
-                server_name="gitingest-mcp",
+                server_name="trelis-gitingest-mcp",
                 server_version="0.1.0",
                 capabilities=server.get_capabilities(
                     notification_options=NotificationOptions(),

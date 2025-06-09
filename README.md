@@ -1,4 +1,4 @@
-# gitingest-mcp MCP server
+# trelis-gitingest-mcp MCP server
 
 An MCP server for gitingest that provides access to Git repository analysis through the Model Context Protocol (MCP). This server leverages the gitingest library to analyze Git repositories and make their content available in a format optimized for LLMs.
 
@@ -109,13 +109,13 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
   <summary>Development/Unpublished Servers Configuration</summary>
   ```
   "mcpServers": {
-    "gitingest-mcp": {
+    "trelis-gitingest-mcp": {
       "command": "uv",
       "args": [
         "--directory",
-        "/Users/your-username/gitingest-mcp",
+        "/Users/your-username/trelis-gitingest-mcp",
         "run",
-        "gitingest-mcp"
+        "trelis-gitingest-mcp"
       ]
     }
   }
@@ -126,10 +126,10 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
   <summary>Published Servers Configuration</summary>
   ```
   "mcpServers": {
-    "gitingest-mcp": {
+    "trelis-gitingest-mcp": {
       "command": "uvx",
       "args": [
-        "gitingest-mcp"
+        "trelis-gitingest-mcp"
       ]
     }
   }
@@ -172,7 +172,7 @@ experience, we strongly recommend using the [MCP Inspector](https://github.com/m
 You can launch the MCP Inspector via [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) with this command:
 
 ```bash
-npx @modelcontextprotocol/inspector uv --directory /Users/your-username/gitingest-mcp run gitingest-mcp
+npx @modelcontextprotocol/inspector uv --directory /Users/your-username/trelis-gitingest-mcp run trelis-gitingest-mcp
 ```
 
 
