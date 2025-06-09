@@ -113,7 +113,7 @@ On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
       "command": "uv",
       "args": [
         "--directory",
-        "/Users/ronanmcgovern/TR/gitingest-mcp",
+        "/Users/your-username/gitingest-mcp",
         "run",
         "gitingest-mcp"
       ]
@@ -172,7 +172,7 @@ experience, we strongly recommend using the [MCP Inspector](https://github.com/m
 You can launch the MCP Inspector via [`npm`](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm) with this command:
 
 ```bash
-npx @modelcontextprotocol/inspector uv --directory /Users/ronanmcgovern/TR/gitingest-mcp run gitingest-mcp
+npx @modelcontextprotocol/inspector uv --directory /Users/your-username/gitingest-mcp run gitingest-mcp
 ```
 
 

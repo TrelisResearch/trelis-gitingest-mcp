@@ -9,7 +9,7 @@ dependencies = [
     "gitingest>=0.1.0",
 ]
 [[project.authors]]
-name = "“RonanMcGovern”"
+name = "RonanMcGovern"
 email = "78278410+RonanKMcGovern@users.noreply.github.com"
 
 [build-system]
