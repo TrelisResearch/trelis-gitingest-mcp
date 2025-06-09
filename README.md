@@ -6,6 +6,35 @@ An MCP server for gitingest that provides access to Git repository analysis thro
 
 This MCP server provides a single unified tool for accessing Git repository data. It automatically handles repository ingestion as needed, so users can immediately query repository content without an explicit ingestion step.
 
+## Tool: `gitingest`
+
+The server provides a single tool called `gitingest` that can be used to analyze Git repositories. The tool accepts the following parameters:
+
+- `repo_uri` (required): URL or local path to the Git repository
+- `resource_type`: Type of data to retrieve (`summary`, `tree`, `content`, or `all`). Default is `summary`.
+- `max_file_size`: Maximum file size in bytes to include in the analysis. Default is 10MB.
+- `include_patterns`: Comma-separated patterns of files to include in the analysis.
+- `exclude_patterns`: Comma-separated patterns of files to exclude from the analysis.
+- `branch`: Specific branch to analyze.
+- `output`: File path to save the output to.
+
+### Resource Types and Large Repositories
+
+For large repositories, it's recommended to first request only the `summary` (which is the default). After ingestion, you can access more detailed information through the resources:
+
+- Use the `tree` resource to explore the repository structure
+- Use the `content` resource to access the full content (if not too large)
+
+If the repository is too large, consider using `include_patterns` and/or `exclude_patterns` to limit the scope of the ingestion.
+
+### Automatic Ingestion and Simple Caching
+
+The server will automatically ingest repositories on demand. You don't need to call a separate ingestion function before querying.
+
+Results are cached in memory during the server's runtime, so subsequent requests for the same repository will be faster. However, the cache is cleared when the server restarts.
+
+Once a repository is ingested, you can access its data either by calling the `gitingest` tool again or by using the resources interface.
+
 ## Quickstart
 
 ### Install
@@ -14,6 +43,18 @@ This MCP server provides a single unified tool for accessing Git repository data
 
 On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
 On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+
+Published Servers Configuration
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uvx",
+    "args": [
+      "trelis-gitingest-mcp"
+    ]
+  }
+}
+```
 
 Development/Unpublished Servers Configuration
 ```json
@@ -24,18 +65,6 @@ Development/Unpublished Servers Configuration
       "--directory",
       "/Users/your-username/trelis-gitingest-mcp",
       "run",
-      "trelis-gitingest-mcp"
-    ]
-  }
-}
-```
-
-Published Servers Configuration
-```json
-"mcpServers": {
-  "trelis-gitingest-mcp": {
-    "command": "uvx",
-    "args": [
       "trelis-gitingest-mcp"
     ]
   }
@@ -74,36 +103,7 @@ Note: You'll need to set PyPI credentials via environment variables or command f
 Since MCP servers run over stdio, debugging can be challenging. For the best debugging
 experience, we strongly recommend using the [MCP Inspector](https://github.com/modelcontextprotocol/inspector).
 
-## Tool: `gitingest`
-
-The server provides a single tool called `gitingest` that can be used to analyze Git repositories. The tool accepts the following parameters:
-
-- `repo_uri` (required): URL or local path to the Git repository
-- `resource_type`: Type of data to retrieve (`summary`, `tree`, `content`, or `all`). Default is `summary`.
-- `max_file_size`: Maximum file size in bytes to include in the analysis. Default is 10MB.
-- `include_patterns`: Comma-separated patterns of files to include in the analysis.
-- `exclude_patterns`: Comma-separated patterns of files to exclude from the analysis.
-- `branch`: Specific branch to analyze.
-- `output`: File path to save the output to.
-
-### Resource Types and Large Repositories
-
-For large repositories, it's recommended to first request only the `summary` (which is the default). After ingestion, you can access more detailed information through the resources:
-
-- Use the `tree` resource to explore the repository structure
-- Use the `content` resource to access the full content (if not too large)
-
-If the repository is too large, consider using `include_patterns` and/or `exclude_patterns` to limit the scope of the ingestion.
-
-### Automatic Ingestion and Simple Caching
-
-The server will automatically ingest repositories on demand. You don't need to call a separate ingestion function before querying.
-
-Results are cached in memory during the server's runtime, so subsequent requests for the same repository will be faster. However, the cache is cleared when the server restarts.
-
-Once a repository is ingested, you can access its data either by calling the `gitingest` tool again or by using the resources interface.
-
-### Examples
+## Examples & MCP Inspector
 
 **Get everything for a repository:**
 ```json
