@@ -128,7 +128,7 @@ async def handle_list_tools() -> list[types.Tool]:
                 "type": "object",
                 "properties": {
                     "repo_uri": {"type": "string", "description": "URL or local path to the Git repository"},
-                    "resource_type": {"type": "string", "enum": ["summary", "tree", "content", "all"], "description": "Type of data to retrieve (default: all)"},
+                    "resource_type": {"type": "string", "enum": ["summary", "tree", "content", "all"], "description": "Type of data to retrieve (default: summary)"},
                     "max_file_size": {"type": "integer", "description": "Maximum file size in bytes (default: 10MB)"},
                     "include_patterns": {"type": "string", "description": "Comma-separated patterns of files to include"},
                     "exclude_patterns": {"type": "string", "description": "Comma-separated patterns of files to exclude"},
@@ -165,7 +165,7 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
         raise ValueError("Missing repo_uri parameter")
     
     # Extract all parameters
-    resource_type = arguments.get("resource_type", "all")
+    resource_type = arguments.get("resource_type", "summary")
     max_file_size = arguments.get("max_file_size", 10 * 1024 * 1024)  # Default 10MB
     branch = arguments.get("branch")
     output = arguments.get("output")  # Add support for output parameter

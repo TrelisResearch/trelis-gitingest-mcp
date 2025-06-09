@@ -8,21 +8,24 @@ This MCP server provides a single unified tool for accessing Git repository data
 
 ## Tool: `gitingest`
 
-The server implements a single unified tool that handles all gitingest functionality:
+The server provides a single tool called `gitingest` that can be used to analyze Git repositories. The tool accepts the following parameters:
 
-### Parameters
+- `repo_uri` (required): URL or local path to the Git repository
+- `resource_type`: Type of data to retrieve (`summary`, `tree`, `content`, or `all`). Default is `summary`.
+- `max_file_size`: Maximum file size in bytes to include in the analysis. Default is 10MB.
+- `include_patterns`: Comma-separated patterns of files to include in the analysis.
+- `exclude_patterns`: Comma-separated patterns of files to exclude from the analysis.
+- `branch`: Specific branch to analyze.
+- `output`: File path to save the output to.
 
-- `repo_uri`: URL or local path to the Git repository (required)
-- `resource_type`: Type of data to retrieve (optional, default: "all")
-  - `"summary"`: Repository summary
-  - `"tree"`: File tree structure
-  - `"content"`: Repository content
-  - `"all"`: All of the above
-- `max_file_size`: Maximum file size in bytes (optional, default: 10MB)
-- `include_patterns`: Comma-separated patterns of files to include (optional). **Note**: These patterns only match files immediately in the specified paths, not nested files.
-- `exclude_patterns`: Comma-separated patterns of files to exclude (optional). **Note**: These patterns only match files immediately in the specified paths, not nested files.
-- `branch`: Specific branch to analyze (optional)
-- `output`: File path to save the output to (optional)
+### Resource Types and Large Repositories
+
+For large repositories, it's recommended to first request only the `summary` (which is the default). After ingestion, you can access more detailed information through the resources:
+
+- Use the `tree` resource to explore the repository structure
+- Use the `content` resource to access the full content (if not too large)
+
+If the repository is too large, consider using `include_patterns` and/or `exclude_patterns` to limit the scope of the ingestion.
 
 ### Automatic Ingestion and Simple Caching
 
