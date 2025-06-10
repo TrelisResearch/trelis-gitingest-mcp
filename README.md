@@ -172,5 +172,9 @@ You can launch the MCP Inspector via [`npm`](https://docs.npmjs.com/downloading-
 npx @modelcontextprotocol/inspector uv --directory /Users/your-username/trelis-gitingest-mcp run trelis-gitingest-mcp
 ```
 
+or using uvx for the mcp server:
+```bash
+npx @modelcontextprotocol/inspector uvx trelis-gitingest-mcp
+```
 
 Upon launching, the Inspector will display a URL that you can access in your browser to begin debugging.
