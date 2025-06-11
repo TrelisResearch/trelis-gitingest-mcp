@@ -36,6 +36,8 @@ Results are cached in memory during the server's runtime, so subsequent requests
 Once a repository is ingested, you can access its data either by calling the `gitingest` tool again or by using the resources interface.
 
 ## Quickstart
+>[!TIP]
+> The PyPI package `trelis-gitingest-mcp` does not yet support nested directories because that is supported by a branch that has not yet been merged in the gitingest library (and PyPI won't allow me to upload a package with a dependency on a branch). For this reason, using the github link to TrelisResearch/gitingest-mcp is recommended for now.
 
 ### Install
 
@@ -50,6 +52,9 @@ Published Servers Configuration
   "trelis-gitingest-mcp": {
     "command": "uvx",
     "args": [
+      "--directory",
+      "/Users/ronanmcgovern/TR/gitingest-mcp", // Your actual project path
+      "run",
       "trelis-gitingest-mcp"
     ]
   }
@@ -174,12 +179,7 @@ npx @modelcontextprotocol/inspector uv --directory /Users/your-username/trelis-g
 
 or using uvx for the mcp server:
 ```bash
-npx @modelcontextprotocol/inspector uvx trelis-gitingest-mcp
+npx @modelcontextprotocol/inspector uvx https://github.com/TrelisResearch/gitingest-mcp.git
 ```
 
 Upon launching, the Inspector will display a URL that you can access in your browser to begin debugging.
-
-```bash
-npx @modelcontextprotocol/inspector uv --directory /Users/ronanmcgovern/TR/gitingest-mcp run trelis-gitingest-mcp
-```
-
