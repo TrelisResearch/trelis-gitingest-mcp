@@ -1,4 +1,5 @@
 import asyncio
+import os
 import hashlib
 import json
 import os
@@ -130,8 +131,8 @@ async def handle_list_tools() -> list[types.Tool]:
                     "repo_uri": {"type": "string", "description": "URL or local path to the Git repository"},
                     "resource_type": {"type": "string", "enum": ["summary", "tree", "content", "all"], "description": "Type of data to retrieve (default: summary)"},
                     "max_file_size": {"type": "integer", "description": "Maximum file size in bytes (default: 10MB)"},
-                    "include_patterns": {"type": "string", "description": "Comma-separated patterns of files to include"},
-                    "exclude_patterns": {"type": "string", "description": "Comma-separated patterns of files to exclude"},
+                    "include_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'src/module/*.py', 'docs/file.md'). Supports basic wildcards like *, ?, [seq], [!seq]. Nested paths should work correctly due to gitingest PR #259. NOTE: Recursive globstar '**' is NOT supported."},
+                    "exclude_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'tests/*', '*.tmp'). Supports basic wildcards like *, ?, [seq], [!seq]. Nested paths should work correctly due to gitingest PR #259. NOTE: Recursive globstar '**' is NOT supported."},
                     "branch": {"type": "string", "description": "Specific branch to analyze"},
                     "output": {"type": "string", "description": "File path to save the output to"}
                 },
@@ -181,11 +182,14 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
         repo_name = repo_name[:-4]
     
     try:
-        # Debug prints
-        print(f"DEBUG - repo_uri: {repo_uri}, type: {type(repo_uri)}", file=sys.stderr)
-        print(f"DEBUG - include_patterns: {include_patterns}, type: {type(include_patterns)}", file=sys.stderr)
-        print(f"DEBUG - exclude_patterns: {exclude_patterns}, type: {type(exclude_patterns)}", file=sys.stderr)
-        print(f"DEBUG - branch: {branch}, type: {type(branch)}", file=sys.stderr)
+        # Check for debug environment variable
+        debug_mode = os.getenv("GITMCP_DEBUG", "false").lower() == "true"
+
+        if debug_mode:
+            print(f"DEBUG - repo_uri: {repo_uri}, type: {type(repo_uri)}", file=sys.stderr)
+            print(f"DEBUG - include_patterns: {include_patterns}, type: {type(include_patterns)}", file=sys.stderr)
+            print(f"DEBUG - exclude_patterns: {exclude_patterns}, type: {type(exclude_patterns)}", file=sys.stderr)
+            print(f"DEBUG - branch: {branch}, type: {type(branch)}", file=sys.stderr)
         
         matching_uri = repo_uri
     

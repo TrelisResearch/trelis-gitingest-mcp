@@ -178,3 +178,8 @@ npx @modelcontextprotocol/inspector uvx trelis-gitingest-mcp
 ```
 
 Upon launching, the Inspector will display a URL that you can access in your browser to begin debugging.
+
+```bash
+npx @modelcontextprotocol/inspector uv --directory /Users/ronanmcgovern/TR/gitingest-mcp run trelis-gitingest-mcp
+```
+

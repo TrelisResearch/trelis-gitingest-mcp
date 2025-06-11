@@ -1,12 +1,13 @@
 [project]
 name = "trelis-gitingest-mcp"
-version = "0.1.3"
+version = "0.2.0"
 description = "An MCP server for gitingest"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "mcp>=1.9.3",
-    "gitingest>=0.1.4",
+    "hatchling",
+    "gitingest @ git+https://github.com/a3ng7n/gitingest.git@2a77705", # Using fix from PR #259
 ]
 [[project.authors]]
 name = "RonanMcGovern"
@@ -18,6 +19,9 @@ build-backend = "hatchling.build"
 
 [project.scripts]
 trelis-gitingest-mcp = "gitingest_mcp:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/gitingest_mcp"]
