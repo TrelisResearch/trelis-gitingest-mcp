@@ -47,15 +47,13 @@ On MacOS: `~/Library/Application\ Support/Claude/claude_desktop_config.json`
 On Windows: `%APPDATA%/Claude/claude_desktop_config.json`
 
 Published Servers Configuration
+> WARNING: Windsurf does not support passing in a github url. Use `trelis-gitingest-mcp` instead.
 ```json
 "mcpServers": {
   "trelis-gitingest-mcp": {
     "command": "uvx",
     "args": [
-      "--directory",
-      "/Users/ronanmcgovern/TR/gitingest-mcp", // Your actual project path
-      "run",
-      "trelis-gitingest-mcp"
+      "git+https://github.com/TrelisResearch/gitingest-mcp"
     ]
   }
 }
