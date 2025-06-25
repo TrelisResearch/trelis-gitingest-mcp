@@ -69,7 +69,7 @@ or to run from the github repo (less concise):
   "trelis-gitingest-mcp": {
     "command": "uvx",
     "args": [
-      "git+https://github.com/TrelisResearch/gitingest-mcp"
+      "git+https://github.com/TrelisResearch/trelis-gitingest-mcp"
     ]
   }
 }
@@ -84,7 +84,7 @@ This MCP server now uses the official [`cyclotruc/gitingest`](https://github.com
 
 ## Quickstart
 >[!TIP]
-> The PyPI package `trelis-gitingest-mcp` does not yet support nested directories because that is supported by a branch that has not yet been merged in the gitingest library (and PyPI won't allow me to upload a package with a dependency on a branch). For this reason, using the github link to TrelisResearch/gitingest-mcp is recommended for now.
+> The PyPI package `trelis-gitingest-mcp` does not yet support nested directories because that is supported by a branch that has not yet been merged in the gitingest library (and PyPI won't allow me to upload a package with a dependency on a branch). For this reason, using the github link to TrelisResearch/trelis-gitingest-mcp is recommended for now.
 
 ### Install
 
@@ -100,7 +100,7 @@ Published Servers Configuration
   "trelis-gitingest-mcp": {
     "command": "uvx",
     "args": [
-      "git+https://github.com/TrelisResearch/gitingest-mcp"
+      "git+https://github.com/TrelisResearch/trelis-gitingest-mcp"
     ]
   }
 }
@@ -224,7 +224,7 @@ npx @modelcontextprotocol/inspector uv --directory /Users/your-username/trelis-g
 
 or using uvx for the mcp server:
 ```bash
-npx @modelcontextprotocol/inspector uvx https://github.com/TrelisResearch/gitingest-mcp.git
+npx @modelcontextprotocol/inspector uvx https://github.com/TrelisResearch/trelis-gitingest-mcp.git
 ```
 
 Upon launching, the Inspector will display a URL that you can access in your browser to begin debugging.
