@@ -35,6 +35,41 @@ Results are cached in memory during the server's runtime, so subsequent requests
 
 Once a repository is ingested, you can access its data either by calling the `gitingest` tool again or by using the resources interface.
 
+## New: Context Truncation with max_tokens
+
+The gitingest MCP tool now supports an optional `max_tokens` argument. If provided, the response will be truncated to at most `max_tokens` tokens (1 token = 4 characters). This helps LLMs manage context size more effectively.
+
+**Example usage:**
+```json
+{
+  "repo_uri": "https://github.com/cyclotruc/gitingest",
+  "resource_type": "content",
+  "max_tokens": 2048
+}
+```
+
+## MCP Server Configuration
+
+To use this MCP server, add the following to your MCP config:
+
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uvx",
+    "args": [
+      "git+https://github.com/TrelisResearch/gitingest-mcp"
+    ]
+  }
+}
+```
+
+- The short config above works as long as the entry point and server name are both `trelis-gitingest-mcp` (see `pyproject.toml` and `src/gitingest_mcp/server.py`).
+- If you rename the repo or entry point, you may need to use the more verbose config with `--from` and `--stdio`.
+
+## Dependency Update
+
+This MCP server now uses the official [`cyclotruc/gitingest`](https://github.com/cyclotruc/gitingest) repository for ingestion, ensuring you get the latest features and fixes.
+
 ## Quickstart
 >[!TIP]
 > The PyPI package `trelis-gitingest-mcp` does not yet support nested directories because that is supported by a branch that has not yet been merged in the gitingest library (and PyPI won't allow me to upload a package with a dependency on a branch). For this reason, using the github link to TrelisResearch/gitingest-mcp is recommended for now.

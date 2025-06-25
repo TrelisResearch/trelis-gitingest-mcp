@@ -1,12 +1,12 @@
 [project]
 name = "trelis-gitingest-mcp"
-version = "0.2.1"
+version = "1.0.0"
 description = "An MCP server for gitingest"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "mcp>=1.9.3",
-    "gitingest @ git+https://github.com/a3ng7n/gitingest.git@2a77705", # Using fix from PR #259
+    "gitingest @ git+https://github.com/cyclotruc/gitingest.git@main",
 ]
 [[project.authors]]
 name = "RonanMcGovern"

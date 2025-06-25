@@ -134,7 +134,8 @@ async def handle_list_tools() -> list[types.Tool]:
                     "include_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'src/module/*.py', 'docs/file.md'). Supports basic wildcards like *, ?, [seq], [!seq]. Nested paths should work correctly due to gitingest PR #259. NOTE: Recursive globstar '**' is NOT supported."},
                     "exclude_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'tests/*', '*.tmp'). Supports basic wildcards like *, ?, [seq], [!seq]. Nested paths should work correctly due to gitingest PR #259. NOTE: Recursive globstar '**' is NOT supported."},
                     "branch": {"type": "string", "description": "Specific branch to analyze"},
-                    "output": {"type": "string", "description": "File path to save the output to"}
+                    "output": {"type": "string", "description": "File path to save the output to"},
+                    "max_tokens": {"type": "integer", "description": "Maximum number of tokens to return (1 token = 4 characters). If set, response will be truncated."}
                 },
                 "required": ["repo_uri"],
             },
@@ -170,10 +171,9 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
     max_file_size = arguments.get("max_file_size", 10 * 1024 * 1024)  # Default 10MB
     branch = arguments.get("branch")
     output = arguments.get("output")  # Add support for output parameter
-    
-    # Handle include/exclude patterns
     include_patterns = arguments.get("include_patterns")
     exclude_patterns = arguments.get("exclude_patterns")
+    max_tokens = arguments.get("max_tokens")
     
     # Extract repo name for better display
     parsed_uri = urlparse(repo_uri)
@@ -230,26 +230,36 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
     # At this point, we should have the repository data
     summary, tree, content = ingest_results[matching_uri]
     
+    def truncate_to_tokens(text: str, max_tokens: int | None) -> str:
+        if max_tokens is None:
+            return text
+        max_chars = max_tokens * 4
+        if len(text) > max_chars:
+            return text[:max_chars] + "... (truncated)"
+        return text
+    
     # Return the requested data based on resource_type
     if resource_type == "all":
         # Return all data
         return [
             types.TextContent(
                 type="text",
-                text=f"Repository: {repo_uri}\n\n"
-                     f"SUMMARY:\n{summary}\n\n"
-                     f"FILE TREE:\n{tree}\n\n"
-                     f"CONTENT:\n{content[:2000]}...\n\n"
-                     f"(Content truncated, {len(content)} total characters)"
+                text=truncate_to_tokens(
+                    f"Repository: {repo_uri}\n\n"
+                    f"SUMMARY:\n{summary}\n\n"
+                    f"FILE TREE:\n{tree}\n\n"
+                    f"CONTENT:\n{content}\n\n",
+                    max_tokens
+                )
             )
         ]
     elif resource_type == "summary":
-        return [types.TextContent(type="text", text=summary)]
+        return [types.TextContent(type="text", text=truncate_to_tokens(summary, max_tokens))]
     elif resource_type == "tree":
-        return [types.TextContent(type="text", text=tree)]
+        return [types.TextContent(type="text", text=truncate_to_tokens(tree, max_tokens))]
     elif resource_type == "content":
         # Return full content
-        return [types.TextContent(type="text", text=content)]
+        return [types.TextContent(type="text", text=truncate_to_tokens(content, max_tokens))]
 
 async def main():
     # Run the server using stdin/stdout streams
