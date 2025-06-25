@@ -1,12 +1,8 @@
 import asyncio
 import os
-import hashlib
-import json
-import os
 import sys
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple
 from urllib.parse import urlparse
+from typing import Dict, List, Optional, Any, Tuple
 
 from gitingest import ingest, ingest_async
 from mcp.server.models import InitializationOptions
@@ -131,11 +127,12 @@ async def handle_list_tools() -> list[types.Tool]:
                     "repo_uri": {"type": "string", "description": "URL or local path to the Git repository"},
                     "resource_type": {"type": "string", "enum": ["summary", "tree", "content", "all"], "description": "Type of data to retrieve (default: summary)"},
                     "max_file_size": {"type": "integer", "description": "Maximum file size in bytes (default: 10MB)"},
-                    "include_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'src/module/*.py', 'docs/file.md'). Supports basic wildcards like *, ?, [seq], [!seq]. Nested paths should work correctly due to gitingest PR #259. NOTE: Recursive globstar '**' is NOT supported."},
-                    "exclude_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'tests/*', '*.tmp'). Supports basic wildcards like *, ?, [seq], [!seq]. Nested paths should work correctly due to gitingest PR #259. NOTE: Recursive globstar '**' is NOT supported."},
+                    "include_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'src/module/*.py', 'docs/file.md')."},
+                    "exclude_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'tests/*', '*.tmp')."},
                     "branch": {"type": "string", "description": "Specific branch to analyze"},
                     "output": {"type": "string", "description": "File path to save the output to"},
-                    "max_tokens": {"type": "integer", "description": "Maximum number of tokens to return (1 token = 4 characters). If set, response will be truncated."}
+                    "max_tokens": {"type": "integer", "description": "Maximum number of tokens to return (1 token = 4 characters). If set, response will be truncated."},
+                    "token": {"type": "string", "description": "GitHub Personal Access Token (PAT) for private repositories."}
                 },
                 "required": ["repo_uri"],
             },
@@ -170,10 +167,11 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
     resource_type = arguments.get("resource_type", "summary")
     max_file_size = arguments.get("max_file_size", 10 * 1024 * 1024)  # Default 10MB
     branch = arguments.get("branch")
-    output = arguments.get("output")  # Add support for output parameter
+    output = arguments.get("output")
     include_patterns = arguments.get("include_patterns")
     exclude_patterns = arguments.get("exclude_patterns")
     max_tokens = arguments.get("max_tokens")
+    token = arguments.get("token")
     
     # Extract repo name for better display
     parsed_uri = urlparse(repo_uri)
@@ -182,15 +180,6 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
         repo_name = repo_name[:-4]
     
     try:
-        # Check for debug environment variable
-        debug_mode = os.getenv("GITMCP_DEBUG", "false").lower() == "true"
-
-        if debug_mode:
-            print(f"DEBUG - repo_uri: {repo_uri}, type: {type(repo_uri)}", file=sys.stderr)
-            print(f"DEBUG - include_patterns: {include_patterns}, type: {type(include_patterns)}", file=sys.stderr)
-            print(f"DEBUG - exclude_patterns: {exclude_patterns}, type: {type(exclude_patterns)}", file=sys.stderr)
-            print(f"DEBUG - branch: {branch}, type: {type(branch)}", file=sys.stderr)
-        
         matching_uri = repo_uri
     
         # Need to ingest the repository
@@ -203,7 +192,8 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
                     include_patterns=include_patterns,
                     exclude_patterns=exclude_patterns,
                     branch=branch,
-                    output=output
+                    output=output,
+                    token=token
                 )
             else:
                 summary, tree, content = ingest(
@@ -212,10 +202,10 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
                     include_patterns=include_patterns,
                     exclude_patterns=exclude_patterns,
                     branch=branch,
-                    output=output
+                    output=output,
+                    token=token
                 )
                 
-            # Store in memory cache
             ingest_results[repo_uri] = (summary, tree, content)
         except Exception as e:
             print(f"Error ingesting repository: {e}", file=sys.stderr)
@@ -227,7 +217,6 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
             text=f"Error ingesting repository {repo_uri}: {str(e)}"
         )]
     
-    # At this point, we should have the repository data
     summary, tree, content = ingest_results[matching_uri]
     
     def truncate_to_tokens(text: str, max_tokens: int | None) -> str:
@@ -238,9 +227,7 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
             return text[:max_chars] + "... (truncated)"
         return text
     
-    # Return the requested data based on resource_type
     if resource_type == "all":
-        # Return all data
         return [
             types.TextContent(
                 type="text",
@@ -258,10 +245,15 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
     elif resource_type == "tree":
         return [types.TextContent(type="text", text=truncate_to_tokens(tree, max_tokens))]
     elif resource_type == "content":
-        # Return full content
         return [types.TextContent(type="text", text=truncate_to_tokens(content, max_tokens))]
+    
+    return [types.TextContent(type="text", text="Invalid resource_type specified.")]
 
-async def main():
+
+def main():
+    asyncio.run(_main())
+
+async def _main():
     # Run the server using stdin/stdout streams
     async with mcp.server.stdio.stdio_server() as (read_stream, write_stream):
         await server.run(
@@ -276,3 +268,6 @@ async def main():
                 ),
             ),
         )
+
+if __name__ == "__main__":
+    main()
