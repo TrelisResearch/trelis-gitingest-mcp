@@ -131,8 +131,7 @@ async def handle_list_tools() -> list[types.Tool]:
                     "exclude_patterns": {"type": "string", "description": "Comma-separated fnmatch-style glob patterns (e.g., 'tests/*', '*.tmp')."},
                     "branch": {"type": "string", "description": "Specific branch to analyze"},
                     "output": {"type": "string", "description": "File path to save the output to"},
-                    "max_tokens": {"type": "integer", "description": "Maximum number of tokens to return (1 token = 4 characters). If set, response will be truncated."},
-                    "token": {"type": "string", "description": "GitHub Personal Access Token (PAT) for private repositories."}
+                    "max_tokens": {"type": "integer", "description": "Maximum number of tokens to return (1 token = 4 characters). If set, response will be truncated."}
                 },
                 "required": ["repo_uri"],
             },
@@ -158,31 +157,22 @@ async def handle_call_tool(
 
 async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.ImageContent | types.EmbeddedResource]:
     """Handle the gitingest tool call"""
-    # Get the repository URI
     repo_uri = arguments.get("repo_uri")
     if not repo_uri:
         raise ValueError("Missing repo_uri parameter")
-    
-    # Extract all parameters
     resource_type = arguments.get("resource_type", "summary")
-    max_file_size = arguments.get("max_file_size", 10 * 1024 * 1024)  # Default 10MB
+    max_file_size = arguments.get("max_file_size", 10 * 1024 * 1024)
     branch = arguments.get("branch")
     output = arguments.get("output")
     include_patterns = arguments.get("include_patterns")
     exclude_patterns = arguments.get("exclude_patterns")
     max_tokens = arguments.get("max_tokens")
-    token = arguments.get("token")
-    
-    # Extract repo name for better display
     parsed_uri = urlparse(repo_uri)
     repo_name = os.path.basename(parsed_uri.path)
     if repo_name.endswith(".git"):
         repo_name = repo_name[:-4]
-    
     try:
         matching_uri = repo_uri
-    
-        # Need to ingest the repository
         try:
             print(f"Ingesting {repo_uri}...", file=sys.stderr)
             if asyncio.get_event_loop().is_running():
@@ -192,8 +182,7 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
                     include_patterns=include_patterns,
                     exclude_patterns=exclude_patterns,
                     branch=branch,
-                    output=output,
-                    token=token
+                    output=output
                 )
             else:
                 summary, tree, content = ingest(
@@ -202,23 +191,18 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
                     include_patterns=include_patterns,
                     exclude_patterns=exclude_patterns,
                     branch=branch,
-                    output=output,
-                    token=token
+                    output=output
                 )
-                
             ingest_results[repo_uri] = (summary, tree, content)
         except Exception as e:
             print(f"Error ingesting repository: {e}", file=sys.stderr)
             raise
-        
     except Exception as e:
         return [types.TextContent(
             type="text", 
             text=f"Error ingesting repository {repo_uri}: {str(e)}"
         )]
-    
     summary, tree, content = ingest_results[matching_uri]
-    
     def truncate_to_tokens(text: str, max_tokens: int | None) -> str:
         if max_tokens is None:
             return text
@@ -226,7 +210,6 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
         if len(text) > max_chars:
             return text[:max_chars] + "... (truncated)"
         return text
-    
     if resource_type == "all":
         return [
             types.TextContent(
@@ -246,7 +229,6 @@ async def handle_gitingest(arguments: dict) -> list[types.TextContent | types.Im
         return [types.TextContent(type="text", text=truncate_to_tokens(tree, max_tokens))]
     elif resource_type == "content":
         return [types.TextContent(type="text", text=truncate_to_tokens(content, max_tokens))]
-    
     return [types.TextContent(type="text", text="Invalid resource_type specified.")]
 
 

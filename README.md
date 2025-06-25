@@ -2,7 +2,7 @@
 
 An MCP server for gitingest that provides access to Git repository analysis through the Model Context Protocol (MCP). This server leverages the gitingest library to analyze Git repositories and make their content available in a format optimized for LLMs.
 
-> Windsurf (and maybe cursor - not tested) may give issues because of the install from a github url not from PyPI. This is because private repo support is only on github for gitingest, not yet on PyPI.
+>[!WARNING] Private repo support in gitingest is not yet on PyPI as of June 25th 2025. Once that is pushed, this MCP will automatically support it.
 
 ## Overview
 
@@ -13,7 +13,6 @@ This MCP server provides a single unified tool for accessing Git repository data
 The server provides a single tool called `gitingest` that can be used to analyze Git repositories. The tool accepts the following parameters:
 
 -   `repo_uri` (required): URL or local path to the Git repository
--   `token` (optional): A GitHub Personal Access Token (PAT) for accessing private repositories.
 -   `resource_type`: Type of data to retrieve (`summary`, `tree`, `content`, or `all`). Default is `summary`.
 -   `max_file_size`: Maximum file size in bytes to include in the analysis. Default is 10MB.
 -   `include_patterns`: Comma-separated patterns of files to include in the analysis.
@@ -26,34 +25,23 @@ The server provides a single tool called `gitingest` that can be used to analyze
 
 You can ingest private GitHub repositories by providing a GitHub Personal Access Token (PAT).
 
-There are two primary ways to configure this:
+**Recommended:** Set an Environment Variable in your MCP Config
 
-1.  **Set an Environment Variable in your MCP Config (Recommended for Servers):**
-    This is the best approach for persistent configuration. Add an `env` block to your server definition in your MCP configuration file. The `gitingest` library will automatically use the `GITHUB_TOKEN` environment variable.
+This is the best approach for persistent configuration. Add an `env` block to your server definition in your MCP configuration file. The `gitingest` library will automatically use the `GITHUB_TOKEN` environment variable.
 
-    ```json
-    "mcpServers": {
-      "trelis-gitingest-mcp": {
-        "command": "uvx",
-        "args": [
-          "trelis-gitingest-mcp"
-        ],
-        "env": {
-          "GITHUB_TOKEN": "github_pat_..."
-        }
-      }
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uvx",
+    "args": [
+      "trelis-gitingest-mcp"
+    ],
+    "env": {
+      "GITHUB_TOKEN": "github_pat_..."
     }
-    ```
-
-2.  **Pass the Token in the Tool Call (Per-Request Basis):**
-    If you only need to access a private repository for a single call, or prefer not to set the environment variable, you can include the `token` parameter directly in your request.
-
-    ```json
-    {
-      "repo_uri": "https://github.com/your-username/your-private-repo",
-      "token": "github_pat_..."
-    }
-    ```
+  }
+}
+```
 
 ### Resource Types and Large Repositories
 
