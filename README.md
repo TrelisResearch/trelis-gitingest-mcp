@@ -2,6 +2,8 @@
 
 An MCP server for gitingest that provides access to Git repository analysis through the Model Context Protocol (MCP). This server leverages the gitingest library to analyze Git repositories and make their content available in a format optimized for LLMs.
 
+> Windsurf (and maybe cursor - not tested) may give issues because of the install from a github url not from PyPI. This is because private repo support is only on github for gitingest, not yet on PyPI.
+
 ## Overview
 
 This MCP server provides a single unified tool for accessing Git repository data. It automatically handles repository ingestion as needed, so users can immediately query repository content without an explicit ingestion step.
@@ -131,6 +133,11 @@ npx @modelcontextprotocol/inspector uv --directory /Users/RonanMcGovern/TR/treli
 or using uvx for the mcp server:
 ```bash
 npx @modelcontextprotocol/inspector uvx https://github.com/TrelisResearch/trelis-gitingest-mcp.git
+```
+
+or using the PyPI package:
+```bash
+npx @modelcontextprotocol/inspector uvx trelis-gitingest-mcp
 ```
 
 Upon launching, the Inspector will display a URL that you can access in your browser to begin debugging.
