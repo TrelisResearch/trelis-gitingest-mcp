@@ -51,6 +51,18 @@ The gitingest MCP tool now supports an optional `max_tokens` argument. If provid
 ## MCP Server Configuration
 
 To use this MCP server, add the following to your MCP config:
+```json
+"mcpServers": {
+  "trelis-gitingest-mcp": {
+    "command": "uvx",
+    "args": [
+      "trelis-gitingest-mcp"
+    ]
+  }
+}
+```
+
+or to run from the github repo (less concise):
 
 ```json
 "mcpServers": {
